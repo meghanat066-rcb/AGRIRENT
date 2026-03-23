@@ -18,27 +18,35 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def ensure_column(conn, table_name, column_name, definition):
+    columns = {
+        row["name"]
+        for row in conn.execute(f"PRAGMA table_info({table_name})").fetchall()
+    }
+    if column_name not in columns:
+        conn.execute(
+            f"ALTER TABLE {table_name} ADD COLUMN {column_name} {definition}"
+        )
+
 # --- INITIALIZE DATABASE ---
 def init_db():
     conn = get_db_connection()
-    
-    # 1. Vendor Table
-    # Part of init_db() in app.py
-    conn.execute(''' 
+
+    conn.execute("""
     CREATE TABLE IF NOT EXISTS vendor (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         shop_name TEXT NOT NULL,
+        government_id TEXT,
         owner_name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         city TEXT NOT NULL,
         password TEXT NOT NULL,
-        status TEXT DEFAULT 'Pending'
+        status TEXT DEFAULT 'Pending',
+        verification_date TEXT
     )
-''')
-    
-    # 2. Customer Table
-    # Replace the customer table section in init_db()
-    conn.execute('''
+    """)
+
+    conn.execute("""
     CREATE TABLE IF NOT EXISTS customer (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -47,58 +55,84 @@ def init_db():
         phone TEXT NOT NULL,
         city TEXT NOT NULL,
         address TEXT NOT NULL,
-        id_proof TEXT  -- For storing the Aadhaar/ID image filename
+        id_proof TEXT
     )
-''')
+    """)
 
-    # 3. Equipment Table
-    conn.execute('''CREATE TABLE IF NOT EXISTS equipment (
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS equipment (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         vendor_id INTEGER,
         name TEXT NOT NULL,
         type TEXT NOT NULL,
         description TEXT,
-        price_per_day REAL NOT NULL,
+        price_per_day REAL NOT NULL DEFAULT 0,
+        price_per_hour REAL NOT NULL DEFAULT 0,
         availability TEXT DEFAULT 'Available',
         image TEXT,
         FOREIGN KEY (vendor_id) REFERENCES vendor (id)
     )
-''')
+    """)
 
-    # 4. Bookings Table
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS bookings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            equipment_id INTEGER,
-            customer_id INTEGER,
-            vendor_id INTEGER,
-            booking_date TEXT,
-            total_price REAL,
-            status TEXT DEFAULT 'Pending',
-            FOREIGN KEY (equipment_id) REFERENCES equipment (id),
-            FOREIGN KEY (customer_id) REFERENCES customer (id)
-        )
-    ''')
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS bookings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        equipment_id INTEGER,
+        customer_id INTEGER,
+        vendor_id INTEGER,
+        booking_date TEXT,
+        start_date TEXT,
+        end_date TEXT,
+        total_price REAL,
+        status TEXT DEFAULT 'Pending',
+        payment_status TEXT DEFAULT 'Pending',
+        return_time TEXT,
+        FOREIGN KEY (equipment_id) REFERENCES equipment (id),
+        FOREIGN KEY (customer_id) REFERENCES customer (id)
+    )
+    """)
 
-    # 5. Feedback & Inquiries
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS feedback (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            customer_name TEXT, email TEXT, message TEXT, rating INTEGER,
-            date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS inquiries (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT, email TEXT, subject TEXT, message TEXT,
-            date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS feedback (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        booking_id INTEGER,
+        customer_id INTEGER,
+        vendor_id INTEGER,
+        equipment_id INTEGER,
+        rating INTEGER,
+        comment TEXT,
+        date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
 
-    # CLOSE ONCE AT THE VERY END
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS inquiries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        email TEXT,
+        subject TEXT,
+        message TEXT,
+        date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    ensure_column(conn, "vendor", "government_id", "TEXT")
+    ensure_column(conn, "vendor", "verification_date", "TEXT")
+    ensure_column(conn, "equipment", "price_per_hour", "REAL DEFAULT 0")
+    ensure_column(conn, "bookings", "start_date", "TEXT")
+    ensure_column(conn, "bookings", "end_date", "TEXT")
+    ensure_column(conn, "bookings", "payment_status", "TEXT DEFAULT 'Pending'")
+    ensure_column(conn, "bookings", "return_time", "TEXT")
+    ensure_column(conn, "feedback", "booking_id", "INTEGER")
+    ensure_column(conn, "feedback", "customer_id", "INTEGER")
+    ensure_column(conn, "feedback", "vendor_id", "INTEGER")
+    ensure_column(conn, "feedback", "equipment_id", "INTEGER")
+    ensure_column(conn, "feedback", "comment", "TEXT")
+
     conn.commit()
     conn.close()
+
+init_db()
 
 # --- GENERAL ROUTES ---
 @app.route('/')
@@ -493,7 +527,7 @@ def verify_customer():
             try:
                 # This is your original INSERT query, now inside the verification check
                 conn.execute('''INSERT INTO customer (name, email, password, phone, city, address, id_proof) 
-                                VALUES (?, ?, ?, ?, ?, ?)''', 
+                                VALUES (?, ?, ?, ?, ?, ?, ?)''', 
                              (data['name'], data['email'], data['password'], data['phone'], data['city'], data['address'], data['id_proof']))
                 conn.commit()
                 
@@ -552,7 +586,7 @@ def customer_login():
 # --- CUSTOMER HOME (Where they see tractors) ---
 @app.route('/customer_home')
 def customer_home():
-    if 'customer_id' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('customer_login'))
 
     conn = get_db_connection()
@@ -1121,20 +1155,18 @@ def search_equipment():
     query = request.args.get('query', '')
     conn = get_db_connection()
     
-    # Search by equipment name or category
+    # Search by equipment name or type
     if query:
-        # Use % wildcard for partial matches
-        search_results = conn.execute('''
+        results = conn.execute('''
             SELECT * FROM equipment 
-            WHERE name LIKE ? OR category LIKE ?
+            WHERE name LIKE ? OR type LIKE ?
         ''', ('%' + query + '%', '%' + query + '%')).fetchall()
     else:
         results = conn.execute("SELECT * FROM equipment WHERE name LIKE ?", 
                           ('%'+query+'%',)).fetchall()
     
     conn.close()
-    # Return to the dashboard but with the filtered results
-    return render_template('customer_dashboard.html', equipment=results)
+    return render_template('customer_browse_equipment.html', equipment=results)
 @app.route('/payment/<int:booking_id>', methods=['GET', 'POST'])
 def payment(booking_id):
     if 'user_id' not in session:
@@ -1173,6 +1205,5 @@ def payment(booking_id):
 
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
     
