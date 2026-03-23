@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vendor Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; }
+        .chart-container { width: 450px; margin: 50px auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); text-align: center; }
+        h2 { color: #2e7d32; margin-bottom: 20px; }
+        .back-btn { display: inline-block; margin-top: 20px; text-decoration: none; color: #2e7d32; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h2>📊 Booking Status Counts</h2>
+        <ul>
+    {% for row in stats %}
+    <li><strong>{{ row[0] }}:</strong> {{ row[1] }} bookings</li>
+    {% endfor %}
+</ul>
+        
+        {% if stats %}
+            <canvas id="statusChart"></canvas>
+        {% else %}
+            <p>No booking data available to display charts yet.</p>
+        {% endif %}
+
+        <a href="{{ url_for('vendor_dashboard') }}" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <script>
+        // We prepare the data by filtering out any potential empty items
+        const labels = [{% for s in stats %}"{{ s[0] }}"{% if not loop.last %}, {% endif %}{% endfor %}];
+        const dataValues = [{% for s in stats %}{{ s[1] }}{% if not loop.last %}, {% endif %}{% endfor %}];
+
+        if (labels.length > 0) {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Booking Status',
+                        data: dataValues,
+                        backgroundColor: ['#ffc107', '#2e7d32', '#2196f3', '#f44336', '#9c27b0'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

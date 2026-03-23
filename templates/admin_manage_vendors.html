@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Vendors | Admin</title>
+    <style>
+        body { font-family: Arial; background: #f0f2f5; padding: 40px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #333; color: white; }
+        .btn-approve { background: #2e7d32; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; font-size: 14px; }
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .pending { background: #fff3e0; color: #ef6c00; }
+        .approved { background: #e8f5e9; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>alert("{{ message }}");</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        ...
+    </div>
+</body>
+    <h2>Admin: Vendor Management</h2>
+    <p><a href="/">← Back to Home</a></p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Shop Name</th>
+                <th>Owner</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendor in vendors %}
+                <tr>
+                    <td>{{ vendor['id'] }}</td>
+                    <td>{{ vendor['shop_name'] }}</td>
+                    <td>{{ vendor['owner_name'] }}</td>
+                    <td>{{ vendor['email'] }}</td>
+                    <td>{{ vendor['city'] }}</td>
+                     <td>
+                     <button class="approve-btn">Approve</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+                    {% if vendor['status'] == 'Pending' %}
+        <a href="{{ url_for('approve_vendor', vendor_id=vendor['id']) }}" class="btn-approve">
+            <i class="fa fa-check"></i> Approve
+        </a>
+        
+        <a href="{{ url_for('admin_reject_vendor', vendor_id=vendor['id']) }}" class="btn-reject" 
+           onclick="return confirm('Reject this vendor? This will remove them from the list.')">
+            <i class="fa fa-times"></i> Reject
+        </a>
+    {% else %}
+        <span class="status-label">{{ vendor['status'] }}</span>
+    {% endif %}
+                </td>
+                <style>
+    .btn-approve { background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; }
+    .btn-reject { background: #dc3545; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; margin-left: 5px; }
+    .status-label { font-weight: bold; color: #555; }
+</style>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Dashboard | AgriRent</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; }
+        .navbar { background: #2e7d32; color: white; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; font-weight: 500; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .welcome-text { text-align: center; color: #333; margin: 30px 0; font-size: 28px; }
+
+        /* Stats Grid - 4 Columns */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; text-align: center; }
+        .stat-content { padding: 25px 15px; }
+        .stat-content i { font-size: 30px; display: block; margin-bottom: 10px; }
+        .stat-content h1 { margin: 5px 0; font-size: 36px; color: #333; }
+        .stat-content p { color: #777; margin: 0; font-size: 14px; }
+        
+        /* Action Grid - 3 Columns */
+        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .action-card { background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; text-align: center; }
+        .action-content { padding: 30px 20px; }
+        .action-content h3 { margin: 0 0 10px 0; color: #333; }
+        .action-content p { color: #888; font-size: 13px; margin: 0; height: 40px; }
+
+        /* Common Button Bar Style */
+        .card-btn { display: block; background: #4caf50; color: white; padding: 10px; text-decoration: none; font-weight: bold; font-size: 14px; transition: 0.3s; border: none; width: 100%; }
+        .card-btn:hover { background: #45a049; }
+        .card-btn i { margin-right: 8px; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div style="font-size: 24px; font-weight: bold;">🚜 AgriRent</div>
+        <div>
+            <a href="{{ url_for('customer_dashboard') }}"><i class="fa fa-home"></i> Home</a>
+            <a href="{{ url_for('customer_browse_equipment') }}"><i class="fa fa-search"></i> Browse Equipment</a>
+            <a href="{{ url_for('my_bookings') }}"><i class="fa fa-calendar-check"></i> My Bookings</a>
+            <a href="/logout"><i class="fa fa-user"></i> {{ session['customer_name'] }} <i class="fa fa-caret-down"></i></a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2 class="welcome-text">🕒 Welcome, {{ session['customer_name'] }}</h2>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <h1>{{ stats.total }}</h1>
+                    <p>Total Bookings</p>
+                </div>
+                <a href="{{ url_for('my_bookings') }}" class="card-btn"><i class="fa fa-eye"></i> View All</a>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-content">
+                    <i class="fa-solid fa-check-to-slot" style="color: #2e7d32;"></i>
+                    <h1>{{ stats.available_count }}</h1>
+                    <p>Available Now</p>
+                </div>
+                <a href="{{ url_for('customer_browse_equipment') }}" class="card-btn"><i class="fa fa-search"></i> Browse</a>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-content">
+                    <i class="fa-solid fa-truck-fast"></i>
+                    <h1>{{ stats.active }}</h1>
+                    <p>Active Rentals</p>
+                </div>
+                <a href="{{ url_for('my_bookings') }}" class="card-btn"><i class="fa fa-eye"></i> View</a>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-content">
+                    <i class="fa-regular fa-comment-dots"></i>
+                    <h1>{{ stats.feedback }}</h1>
+                    <p>Feedback Pending</p>
+                </div>
+                <a href="{{ url_for('my_bookings') }}" class="card-btn"><i class="fa fa-edit"></i> Give Feedback</a>
+            </div>
+        </div>
+
+        <div class="action-grid">
+            <div class="action-card">
+                <div class="action-content">
+                    <h3><i class="fa fa-tools"></i> Browse Equipment</h3>
+                    <p>Find tractors, harvesters, irrigation tools and more.</p>
+                </div>
+                <a href="{{ url_for('customer_browse_equipment') }}" class="card-btn"><i class="fa fa-search"></i> Browse Now</a>
+            </div>
+
+            <div class="action-card">
+                <div class="action-content">
+                    <h3><i class="fa fa-tasks"></i> My Bookings</h3>
+                    <p>View all your bookings and their status.</p>
+                </div>
+                <a href="{{ url_for('my_bookings') }}" class="card-btn"><i class="fa fa-eye"></i> View Appointments</a>
+            </div>
+
+            <div class="action-card">
+                <div class="action-content">
+                    <h3><i class="fa fa-comment"></i> Give Feedback</h3>
+                    <p>Submit feedback for completed bookings.</p>
+                </div>
+                <a href="{{ url_for('my_bookings') }}" class="card-btn"><i class="fa fa-edit"></i> Give Feedback</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

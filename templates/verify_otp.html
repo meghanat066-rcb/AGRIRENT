@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP | AgriRental</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .otp-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        h2 { color: #2e7d32; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px; font-size: 24px; text-align: center; letter-spacing: 5px; outline: none; }
+        input:focus { border-color: #2e7d32; }
+        button { width: 100%; padding: 12px; background-color: #2e7d32; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #1b5e20; }
+        .resend { margin-top: 15px; font-size: 13px; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>alert("{{ message }}");</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="otp-container">
+        <h2>Verify Phone</h2>
+        <p>Enter the 4-digit code sent to your mobile number to complete registration.</p>
+        
+        <form action="/verify_customer" method="POST">
+            <input type="text" name="otp" maxlength="4" placeholder="XXXX" required autocomplete="off">
+            <button type="submit">Verify & Register</button>
+        </form>
+
+       <div class="resend">
+    Didn't get the code? 
+    <a href="{{ url_for('resend_otp') }}" style="color: #2e7d32; text-decoration: none; font-weight: bold;">
+        Resend OTP
+    </a>
+</div>
+
+</body>
+</html>

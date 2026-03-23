@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Bookings - AgriRent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial; background-color: #e9f5e9; margin: 0; padding: 0; }
+        
+        /* Navbar matching your vendor dashboard style */
+        .navbar { background: #2e7d32; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; }
+
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 1100px; margin: 20px auto; }
+        .header { border-bottom: 2px solid #5cb85c; margin-bottom: 20px; padding-bottom: 10px; color: #5cb85c; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background: #5cb85c; color: white; }
+        
+        .status-pending { color: #f0ad4e; font-weight: bold; }
+        .status-confirmed { color: #2e7d32; font-weight: bold; }
+        .status-completed { color: #0275d8; font-weight: bold; }
+        .status-returned { color: #5cb85c; font-weight: bold; }
+        .status-cancelled { color: #d9534f; font-weight: bold; }
+
+        .btn { padding: 8px 12px; text-decoration: none; border-radius: 4px; color: white; font-size: 13px; font-weight: bold; margin-right: 5px; display: inline-block; }
+        .btn-action { background-color: #0275d8; border: 1px solid #0275d8; }
+        
+        .back-btn { display: inline-block; margin-top: 20px; color: #5cb85c; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div style="font-size: 20px;">🚜 AgriRental | Vendor Panel</div>
+        <div>
+            <a href="{{ url_for('vendor_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h2><i class="fa fa-calendar-check"></i> Manage Customer Bookings</h2>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Equipment</th>
+                    <th>Customer</th>
+                    <th>Rental Period (Date & Time)</th>
+                    <th>Earnings</th>
+                    <th>Status</th>
+                    <th>Action</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.id }}</td>
+                    <td>{{ booking.equipment_name }}</td> 
+                    <td>
+                        <strong>{{ booking.customer_name }}</strong> <br>
+                        
+                        {% if booking.id_proof %}
+                            <a href="{{ url_for('static', filename='uploads/' + booking.id_proof) }}" 
+                               target="_blank" 
+                               style="font-size: 11px; color: #0275d8; text-decoration: none;">
+                               <i class="fa fa-id-card"></i> View ID Proof
+                            </a>
+                        {% else %}
+                            <span style="font-size: 11px; color: #999;">No ID uploaded</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if booking.start_date %}
+                            <strong>Start:</strong> {{ booking.start_date }} <br>
+                            <strong>End:</strong> {{ booking.end_date }}
+                        {% else %}
+                            <span style="color: red; font-size: 12px;">No Dates Recorded</span>
+                        {% endif %}
+                    </td>
+                    <td>₹{{ booking.total_price }}</td>
+                    <td><span class="status-{{ booking.status|lower }}">{{ booking.status }}</span></td>
+                    <td>
+                        {% if booking.status == 'Confirmed' %}
+                           <span style="color: #2e7d32; font-size: 12px; display: block; margin-bottom: 5px;">✅ Paid & Ready</span>
+                           <a href="{{ url_for('update_status', id=booking.id, status='Completed') }}" class="btn btn-action">
+                             Mark Picked Up
+                           </a>
+                        {% elif booking.status == 'Completed' %}
+                           <span style="color: #0275d8; font-weight: bold;">Equipment in Use</span>
+                        {% elif booking.status == 'Returned' %}
+                           <span style="color: #5cb85c; font-weight: bold;">✅ Returned</span>
+                        {% else %}
+                           <span style="font-weight: bold;">{{ booking.status }}</span>
+                        {% endif %}
+                    </td>
+                    
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">No bookings found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('vendor_dashboard') }}" class="back-btn"><i class="fa fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+</body>
+</html>

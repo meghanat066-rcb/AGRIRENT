@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book {{ item.name }} | AgriRent</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #e9ecef; margin: 0; padding: 0; }
+        
+        .booking-container { 
+            display: flex; 
+            max-width: 1000px; 
+            margin: 50px auto; 
+            background: white; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        }
+
+        .image-section { 
+            flex: 1.2; 
+            background: #fff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            border-right: 1px solid #eee;
+        }
+        .image-section img { 
+            max-width: 100%; 
+            height: 350px; 
+            object-fit: cover;
+            border-radius: 8px; 
+        }
+
+        .details-section { 
+            flex: 1; 
+            padding: 40px; 
+        }
+        
+        .info-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        h2 { margin: 0; color: #2c3e50; font-size: 24px; }
+        .price { font-size: 22px; color: #27ae60; font-weight: bold; margin: 15px 0; }
+        .desc { color: #666; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+
+        label { display: block; margin-top: 15px; font-weight: bold; color: #34495e; font-size: 14px; }
+        input { 
+            width: 100%; padding: 12px; margin-top: 5px; 
+            border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; 
+        }
+        
+        .book-btn { 
+            background: #27ae60; color: white; border: none; padding: 15px; 
+            width: 100%; border-radius: 6px; cursor: pointer; font-size: 18px; 
+            font-weight: bold; margin-top: 25px; transition: 0.3s;
+        }
+        .book-btn:hover { background: #219150; }
+        .cancel-link { display: block; text-align: center; margin-top: 15px; color: #95a5a6; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div style="background: #2e7d32; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 20px; font-weight: bold;">🚜 AgriRental</div>
+        <div>
+            <a href="{{ url_for('customer_dashboard') }}" style="color: white; text-decoration: none; margin-left: 20px;">Home</a>
+            <a href="{{ url_for('my_bookings') }}" style="color: white; text-decoration: none; margin-left: 20px;">My Bookings</a>
+            <a href="{{ url_for('logout') }}" style="color: white; text-decoration: none; margin-left: 20px;">Logout</a>
+        </div>
+    </div>
+
+    <div class="booking-container">
+        <div class="image-section">
+            <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="{{ item.name }}">
+        </div>
+
+        <div class="details-section">
+            <div class="info-header">
+                <h2>{{ item.name }}</h2>
+            </div>
+            
+            <p style="margin: 5px 0;"><strong>🏷️ Type:</strong> {{ item.type }}</p>
+            <p style="margin: 5px 0;"><strong>👤 Vendor:</strong> {{ item.shop_name }}</p>
+            <p class="price">₹{{ item.price_per_day }} / Day</p>
+            
+            <p class="desc"><strong>Description:</strong> {{ item.description }}</p>
+            
+            <hr style="border: 0; border-top: 1px solid #eee;">
+
+           <form method="POST">
+    <label style="font-weight: bold; display: block; margin-top: 10px;">📅 Start Date & Time Slot:</label>
+    <div style="display: flex; gap: 10px; margin-top: 5px;">
+        <input type="date" name="start_date" id="start_date" required style="flex: 2; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+        <select name="start_time" required style="flex: 1.5; padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: white;">
+            {% for hour in range(0, 24) %}
+                <option value="{{ '%02d'|format(hour) }}:00">{{ '%02d'|format(hour) }}:00</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <label style="font-weight: bold; display: block; margin-top: 15px;">📅 End Date & Time Slot:</label>
+    <div style="display: flex; gap: 10px; margin-top: 5px;">
+        <input type="date" name="end_date" id="end_date" required style="flex: 2; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+        <select name="end_time" required style="flex: 1.5; padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: white;">
+            {% for hour in range(0, 24) %}
+                <option value="{{ '%02d'|format(hour) }}:00">{{ '%02d'|format(hour) }}:00</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <button type="submit" class="book-btn">🛒 Book Now</button>
+</form>
+
+<script>
+    // Prevent selecting past dates for the calendar
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start_date').setAttribute('min', today);
+    document.getElementById('end_date').setAttribute('min', today);
+</script>
+
+            <a href="{{ url_for('customer_dashboard') }}" class="cancel-link">Cancel and go back</a>
+        </div>
+    </div>
+</body>
+</html>

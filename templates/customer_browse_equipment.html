@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Browse Equipment | AgriRent</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; }
+        .navbar { background: #2e7d32; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-weight: 500; }
+        
+        /* Updated search-section for horizontal alignment */
+        .search-section { background: white; padding: 30px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .search-container { display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .search-wrapper { position: relative; display: flex; align-items: center; }
+        .search-bar { width: 500px; padding: 12px 50px 12px 20px; border: 1px solid #ddd; border-radius: 25px; outline: none; }
+        
+        /* Microphone button style */
+        .mic-btn { position: absolute; right: 15px; background: none; border: none; cursor: pointer; font-size: 20px; color: #555; }
+        
+        .search-btn { padding: 12px 25px; background: #2e7d32; color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; }
+
+        .container { padding: 40px 50px; max-width: 1200px; margin: 0 auto; }
+        .equipment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: 0.3s; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        
+        .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-content h3 { margin: 0 0 5px; color: #2c3e50; }
+        .category-tag { font-size: 0.75rem; color: #27ae60; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+        .price { font-size: 1.3rem; font-weight: bold; color: #2e7d32; margin: 10px 0; }
+        .vendor-info { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 15px; }
+        
+        .view-btn { display: block; text-align: center; background: #4caf50; color: white; padding: 12px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: auto; transition: 0.3s; }
+        .view-btn:hover { background: #45a049; }
+        .no-data { text-align: center; padding: 50px; color: #95a5a6; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div style="font-size: 24px; font-weight: bold;">🚜 AgriRent</div>
+        <div class="nav-links">
+            <a href="{{ url_for('customer_dashboard') }}">Home</a>
+            <a href="{{ url_for('customer_browse_equipment') }}">Browse Equipment</a>
+            <a href="{{ url_for('my_bookings') }}">My Bookings</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="search-section">
+    <form action="{{ url_for('customer_browse_equipment') }}" method="GET" id="searchForm" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+        <div style="position: relative; display: flex; align-items: center;">
+            
+            <select id="langSelect" onchange="translateCards(this.value)" style="border: 1px solid #ddd; border-radius: 25px 0 0 25px; padding: 12px; background: #f9f9f9; outline: none; border-right: none;">
+                <option value="en-IN">English</option>
+                <option value="hi-IN">Hindi (हिंदी)</option>
+                <option value="kn-IN">Kannada (ಕನ್ನಡ)</option>
+            </select>
+
+            <input type="text" name="search" id="searchInput" class="search-bar" 
+                   placeholder="Search..." 
+                   value="{{ request.args.get('search', '') }}" 
+                   style="width: 400px; padding: 12px 50px 12px 15px; border: 1px solid #ddd; border-radius: 0 25px 25px 0; outline: none;">
+            
+            <button type="button" onclick="startDictation()" style="position: absolute; right: 15px; background: none; border: none; cursor: pointer; font-size: 20px;">
+                🎤
+            </button>
+        </div>
+        <button type="submit" class="search-btn">Search</button>
+    </form>
+</div>
+
+    <div class="container">
+        {% if equipment %}
+            <div class="equipment-grid">
+                {% for item in equipment %}
+                <div class="card">
+                    <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="{{ item.name }}">
+                    <div class="card-content">
+                        <div class="category-tag"><span class="type-label">Type</span>: <span class="translatable"> {{ item.type }}</span></div>
+                        <h3 class="translatable">{{ item.name }}</h3>
+                        <div class="vendor-info">📍<span class="translatable">{{ item.city }}</span> | <span class="vendor-label">Vendor</span>: <span class="translatable">{{ item.shop_name }}</span>
+    </div>
+                        <div class="price">₹{{ item.price_per_day }} <span class="day-label" style="font-size: 0.8rem; font-weight: normal; color: #999;">/ day</span></div>
+                        <p class="translatable" style="font-size: 0.85rem; color: #666; line-height: 1.4; margin-bottom: 15px;">{{ item.description }}</p>
+                        <a href="{{ url_for('book_equipment', id=item.id) }}" class="view-btn view-btn-text">View and Rent</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-data">
+                <p>No equipment found matching your search. Try another city!</p>
+            </div>
+        {% endif %}
+    </div>
+<script>
+    // 1. Translation Dictionaries
+    const translations = {
+        'en-IN': { type: 'Type', vendor: 'Vendor', day: '/ day', book: 'View and Rent' },
+        'hi-IN': { type: 'प्रकार', vendor: 'विक्रेता', day: '/ दिन', book: 'देखें और किराए पर लें' },
+        'kn-IN': { type: 'ಮಾದರಿ', vendor: 'ವಿಕ್ರೇತ', day: '/ ದಿನ', book: 'ನೋಡಿ ಮತ್ತು ಬಾಡಿಗೆಗೆ ಪಡೆಯಿರಿ' }
+    };
+
+    const dataMap = {
+        'kn-IN': {
+            'Tractor': 'ಟ್ರಾಕ್ಟರ್',
+            'Swaraj 744 FE': 'ಸ್ವರಾಜ್ 744 FE',
+            'Shiva Rentals': 'ಶಿವ ರೆಂಟಲ್ಸ್',
+            'Bengaluru': 'ಬೆಂಗಳೂರು',
+            '48 HP, 2020 model, strong engine': '48 ಎಚ್‌ಪಿ, 2020 ಮಾದರಿ, ಬಲಿಷ್ಠ ಎಂಜಿನ್'
+        },
+        'hi-IN': {
+            'Tractor': 'ट्रैक्टर',
+            'Swaraj 744 FE': 'स्वराज 744 FE',
+            'Shiva Rentals': 'शिव रेंटल्स',
+            'Bengaluru': 'बेंगलुरु',
+            '48 HP, 2020 model, strong engine': '48 एचपी, 2020 मॉडल, मजबूत इंजन'
+        }
+    };
+
+    function translateCards(lang) {
+        localStorage.setItem('selectedLanguage', lang);
+        const t = translations[lang] || translations['en-IN'];
+        const dm = dataMap[lang] || {};
+        
+        // Translate Labels
+        document.querySelectorAll('.type-label').forEach(el => el.innerText = t.type);
+        document.querySelectorAll('.vendor-label').forEach(el => el.innerText = t.vendor);
+        document.querySelectorAll('.day-label').forEach(el => el.innerText = t.day);
+        document.querySelectorAll('.view-btn-text').forEach(el => el.innerText = t.book);
+
+        // Translate Database Content (Names, Shop, City, Desc)
+        document.querySelectorAll('.translatable').forEach(el => {
+            // Store original English text so we can always go back to it
+            if (!el.getAttribute('data-original')) {
+                el.setAttribute('data-original', el.innerText.trim());
+            }
+            const originalText = el.getAttribute('data-original');
+            
+            // Swap if translation exists, otherwise keep original
+            el.innerText = dm[originalText] || originalText;
+        });
+    }
+
+    // Run translation automatically on page load
+    window.onload = function() {
+        const savedLang = localStorage.getItem('selectedLanguage') || 'en-IN';
+        document.getElementById('langSelect').value = savedLang;
+        translateCards(savedLang);
+    };
+
+    function startDictation() {
+        if (window.hasOwnProperty('webkitSpeechRecognition')) {
+            var recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            var selectedLang = document.getElementById('langSelect').value;
+            recognition.lang = selectedLang; 
+            
+            recognition.start();
+            recognition.onresult = function(e) {
+                var voiceQuery = e.results[0][0].transcript;
+                document.getElementById('searchInput').value = voiceQuery.replace(/\./g, '');
+                recognition.stop();
+                document.getElementById('searchForm').submit();
+            };
+            recognition.onerror = function(e) { recognition.stop(); };
+        } else {
+            alert("Please use Google Chrome for voice search.");
+        }
+    }
+</script>
+</body>
+</html>

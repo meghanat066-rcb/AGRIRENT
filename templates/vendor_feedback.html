@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Feedback - AgriRent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #e9f5e9; padding: 40px; margin: 0; }
+        .container { max-width: 800px; margin: auto; }
+        h2 { color: #2e7d32; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; margin-bottom: 30px; }
+        
+        /* Attractive Feedback Card */
+        .card { 
+            background: white; 
+            padding: 25px; 
+            margin-bottom: 20px; 
+            border-radius: 12px; 
+            border-left: 8px solid #5cb85c; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-3px); }
+        
+        .header-info { display: flex; justify-content: space-between; align-items: flex-start; }
+        .cust-name { font-size: 1.1rem; color: #333; font-weight: bold; }
+        .equip-name { color: #666; font-size: 0.9rem; margin: 5px 0; }
+        
+        .stars { color: #ffc107; font-size: 1.3rem; margin: 10px 0; }
+        .comment { font-style: italic; color: #444; line-height: 1.5; background: #f9f9f9; padding: 10px; border-radius: 6px; }
+        
+        .back-link { display: inline-block; margin-top: 20px; color: #2e7d32; text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+        
+        .no-data { text-align: center; padding: 50px; background: white; border-radius: 12px; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2><i class="fa fa-comments"></i> Customer Reviews</h2>
+
+        {% if feedbacks %}
+            {% for f in feedbacks %}
+            <div class="card">
+                <div class="header-info">
+                    <div>
+                        <div class="cust-name"><i class="fa fa-user-circle"></i> {{ f.cust_name }}</div>
+                        <div class="equip-name"><i class="fa fa-tools"></i> Equipment: <strong>{{ f.equip_name }}</strong></div>
+                    </div>
+                </div>
+
+                <div class="stars">
+                    {% if f.rating %}
+                        {% for i in range(f.rating|int) %}★{% endfor %}
+                        {% for i in range(5 - f.rating|int) %}<span style="color: #ddd;">★</span>{% endfor %}
+                        <span style="color: #666; font-size: 0.9rem; margin-left: 5px;">({{ f.rating }}/5)</span>
+                    {% else %}
+                        <span style="color: #999;">No Rating</span>
+                    {% endif %}
+                </div>
+
+                <div class="comment">
+                    <i class="fa fa-quote-left" style="color: #ccc; margin-right: 10px;"></i>
+                    {{ f.feedback_message }}
+                    <i class="fa fa-quote-right" style="color: #ccc; margin-left: 10px;"></i>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-data">
+                <i class="fa fa-comment-slash" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                <p>No reviews have been submitted for your equipment yet.</p>
+            </div>
+        {% endif %}
+
+        <a href="{{ url_for('vendor_dashboard') }}" class="back-link">
+            <i class="fa fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vendor Dashboard - AgriRent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { margin: 0; font-family: Arial; background-color: #e9f5e9; }
+        /* Navbar matching screenshot */
+        .navbar { background: #5cb85c; color: white; padding: 10px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 15px; font-size: 14px; }
+        
+        .welcome-section { text-align: center; margin-top: 30px; font-size: 24px; }
+        
+        .container { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; max-width: 1200px; margin: auto; }
+        
+        /* Stats Cards (Top Row) */
+        .stat-card { background: white; width: 300px; margin: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .stat-card i { font-size: 40px; margin-top: 20px; color: #333; }
+        .stat-card h2 { margin: 10px 0; font-size: 30px; }
+        .stat-btn { background: #5cb85c; color: white; padding: 10px; display: block; text-decoration: none; border-radius: 0 0 8px 8px; }
+
+        /* Action Cards (Bottom Row) */
+        .action-card { background: white; width: 220px; margin: 10px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding-top: 15px; }
+        .action-btn { background: #5cb85c; color: white; padding: 8px; display: block; text-decoration: none; border-radius: 0 0 8px 8px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>alert("{{ message }}");</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="navbar">
+        <div style="font-weight: bold;"><i class="fa fa-home"></i> AgriRent Vendor</div>
+        <div class="nav-links">
+            <a href="{{ url_for('vendor_dashboard') }}"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+            <a href="{{ url_for('vendor_manage_equipment') }}"><i class="fa fa-tools"></i> Manage Equipment</a>
+            <a href="{{ url_for('vendor_view_bookings') }}"><i class="fa fa-calendar-check"></i> View Bookings</a>
+            <a href="{{ url_for('vendor_feedback') }}"><i class="fa fa-comment"></i> Feedback</a>
+            <a href="{{ url_for('vendor_sales') }}"><i class="fa fa-chart-line"></i> Sales</a>
+            <a href="{{url_for('vendor_analytics') }}"><i class="fa fa-chart-bar"></i> Analytics</a>
+            <a href="/logout"><i class="fa fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <div class="welcome-section">
+        <i class="fa fa-user-circle"></i> Welcome, {{ session['vendor_name'] }}
+    </div>
+
+    <div class="container">
+        <div class="stat-card">
+            <i class="fa fa-tools"></i>
+            <h2>{{ total_equip }}</h2>
+            <p>Total Equipment</p>
+            <a href="{{ url_for('vendor_manage_equipment') }}" class="stat-btn"><i class="fa fa-edit"></i> Manage</a>
+        </div>
+        <div class="stat-card">
+            <i class="fa fa-book"></i>
+            <h2>{{ total_bookings }}</h2>
+            <p>Total Bookings</p>
+            <a href="{{ url_for('vendor_view_bookings') }}" class="stat-btn"><i class="fa fa-eye"></i> View</a>
+       </div>
+       
+        <div class="stat-card">
+            <i class="fa fa-check-circle"></i>
+            <h2>0</h2>
+            <p>Completed Bookings</p>
+            <a href="#" class="stat-btn"><i class="fa fa-info-circle"></i> Details</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="action-card">
+            <i class="fa fa-tools"></i><br>Manage Equipment
+            <a href="{{ url_for('vendor_manage_equipment') }}" class="action-btn"><i class="fa fa-arrow-circle-right"></i> Go</a>
+        </div>
+        <div class="action-card">
+            <i class="fa fa-calendar-check"></i><br>View Bookings
+            <a href="{{ url_for('vendor_view_bookings') }}" class="action-btn"><i class="fa fa-arrow-circle-right"></i> Go</a>
+        </div>
+        <div class="action-card">
+            <i class="fa fa-comments"></i><br>Customer Feedback
+            <a href="{{ url_for('vendor_feedback') }}" class="action-btn"><i class="fa fa-arrow-circle-right"></i> Go</a>
+        </div>
+        <div class="action-card">
+            <i class="fa fa-chart-line"></i><br>Sales Report
+            <a href="{{ url_for('vendor_sales') }}" class="action-btn">Go</a>
+        </div>
+        <div class="action-card">
+            <i class="fa fa-chart-line"></i><br>Analytics
+            <a href="{{ url_for('vendor_analytics') }}" class="action-btn"><i class="fa fa-arrow-circle-right"></i> Go</a>
+        </div>
+    </div>
+
+</body>
+</html>

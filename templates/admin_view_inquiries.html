@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - View Inquiries</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; background: #f4f7f6; }
+        .sidebar { width: 260px; height: 100vh; background: #2c3e50; color: white; position: fixed; }
+        .nav-link { display: block; padding: 15px 25px; color: #bdc3c7; text-decoration: none; }
+        .nav-link:hover { background: #34495e; color: white; }
+        .content { margin-left: 260px; padding: 30px; width: 100%; }
+        
+        .message-list { background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden; }
+        .message-item { padding: 20px; border-bottom: 1px solid #eee; }
+        .message-item:last-child { border-bottom: none; }
+        .sender-info { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .email { color: #3498db; text-decoration: none; }
+        .date-sent { color: #95a5a6; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div style="padding: 20px; background: #1a252f; text-align: center; font-weight: bold; color: #3498db;">AGRI RENTAL ADMIN</div>
+        <a href="/admin_dashboard" class="nav-link">🏠 Dashboard</a>
+        <a href="/admin_manage_vendors" class="nav-link">🚜 Manage Vendors</a>
+        <a href="/admin_view/customers" class="nav-link">👥 Registered Customers</a>
+        <a href="/admin_view/equipment" class="nav-link">🛠️ View Equipment</a>
+        <a href="/admin_view_bookings" class="nav-link">📅 View Bookings</a>
+        <a href="/admin_view_feedback" class="nav-link">💬 View Feedback</a>
+        <a href="/admin_view_inquiries" class="nav-link" style="color: white; background: #34495e;">📧 View Inquiries</a>
+        <a href="/logout" class="nav-link" style="color: #e74c3c; margin-top: 20px;">🚪 Logout</a>
+    </div>
+
+    <div class="content">
+    <h1>User Inquiries</h1>
+    <p>Manage messages sent from the platform contact forms.</p>
+    <hr><br>
+
+    <div class="message-list">
+        {% for i in inquiries %}
+        <div style="background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <strong>From: {{ i.name }}</strong> 
+            <span style="color: #3498db;">({{ i.email }})</span>
+            <p style="margin-top: 10px; padding: 10px; background: #f9f9f9; border-radius: 5px;">
+                {{ i.message }}
+            </p>
+            <small style="color: #95a5a6;">Received: {{ i.date_sent }}</small>
+        </div>
+        {% else %}
+        <div style="padding: 40px; text-align: center; color: #888; background: white; border-radius: 8px;">
+            No inquiries found.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

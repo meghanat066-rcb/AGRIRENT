@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Bookings | AgriRental</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; }
+        .navbar { background: #2e7d32; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .navbar a { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: 500; }
+        
+        .container { padding: 2rem; max-width: 1000px; margin: auto; }
+        .page-header { border-bottom: 2px solid #2e7d32; padding-bottom: 10px; margin-bottom: 30px; color: #333; }
+
+        .booking-card {
+            background: white; 
+            padding: 25px;    
+            border-radius: 12px; 
+            border: 1px solid #ddd; 
+            border-left: 8px solid #2e7d32; 
+            display: block !important;
+            clear: both !important; 
+            margin-bottom: 30px !important; 
+            width: 100%;
+            overflow: hidden; 
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .equip-name { font-size: 20px; color: #1b5e20; margin: 0; }
+        .equip-type { color: #666; font-size: 14px; margin-top: 4px; }
+
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .status-pending { background: #fff3e0; color: #e65100; }
+        .status-confirmed { background: #e8f5e9; color: #2e7d32; } /* Updated for Instant Booking */
+        .status-completed { background: #e3f2fd; color: #0275d8; }
+        .status-returned { background: #f1f8e9; color: #558b2f; }
+        .status-cancelled { background: #ffebee; color: #c62828; }
+
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; padding: 15px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+        .info-box { font-size: 14px; color: #444; }
+        .info-label { font-weight: bold; color: #888; display: block; margin-bottom: 5px; }
+
+        .total-price { font-size: 22px; color: #2e7d32; font-weight: bold; margin-top: 15px; }
+
+        .action-btn { padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.3s; border: none; cursor: pointer; display: inline-block; }
+        .btn-feedback { background: #f8f9fa; color: #333; border: 1px solid #ddd; }
+        .btn-invoice { background: #3498db; color: white; }
+        .btn-return { background: #2e7d32; color: white; }
+        .btn-payment { background: #e67e22; color: white; }
+        .status-unpaid { color: #e67e22; font-weight: bold; font-size: 14px; }
+        .status-paid { color: #2e7d32; font-weight: bold; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div style="font-size: 22px; font-weight: bold;">🚜 My Rental History</div>
+    <div>
+        <a href="{{ url_for('customer_dashboard') }}">Home</a>
+        <a href="{{ url_for('customer_browse_equipment') }}">Browse Equipment</a>
+        <a href="{{ url_for('my_bookings') }}">My Bookings</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div style="padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; margin: 20px auto; max-width: 1000px; text-align: center; font-weight: bold;">
+        ✅ {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="container">
+    <h2 class="page-header">Rental Records</h2>
+
+    {% if bookings %}
+        {% for b in bookings %}
+        <div class="booking-card">
+            <div class="card-top">
+                <div>
+                    <h3 class="equip-name">{{ b.name }}</h3>
+                    <div class="equip-type">Category: {{ b.type }}</div>
+                </div>
+                <div style="text-align: right;">
+                    <span class="status-badge status-{{ b.status|lower }}">{{ b.status }}</span>
+                    <div style="font-size: 12px; color: #999; margin-top: 8px;">Booked on: {{ b.booking_date }}</div>
+                </div>
+            </div>
+
+            <div class="details-grid">
+                <div class="info-box">
+                    <span class="info-label">🕒 RENTAL PERIOD (DATE & TIME)</span>
+                    <strong>From:</strong> {{ b.start_date }} <br>
+                    <strong>Until:</strong> {{ b.end_date }}
+                </div>
+                <div class="info-box" style="text-align: right;">
+                    <span class="info-label">💰 TOTAL PAYMENT</span>
+                    <span class="total-price">₹{{ b.total_price | abs }}</span>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                {% if b.status == 'Confirmed' %}
+                    <div style="width: 100%;">
+                        <span class="status-paid" style="display: block; margin-bottom: 10px;">✅ Booking Confirmed & Paid</span>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <a href="/download_invoice/{{ b.id }}" class="action-btn btn-invoice">📄 Download Invoice</a>
+                            <a href="{{ url_for('update_status_customer', id=b.id, status='Completed') }}" class="action-btn btn-return">🚜 Mark as Received</a>
+                        </div>
+                    </div>
+
+                {% elif b.status == 'Completed' %}
+                    <div style="width: 100%;">
+                        <span class="status-paid" style="display: block; margin-bottom: 10px;">🛠️ Equipment in Use</span>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <a href="/give_feedback/{{ b.id }}" class="action-btn btn-feedback">📝 Give Feedback</a>
+                            <a href="{{ url_for('update_status_customer', id=b.id, status='Returned') }}" class="action-btn btn-return">🔄 Return Equipment</a>
+                        </div>
+                    </div>
+
+                {% elif b.status == 'Returned' %}
+                    <div style="width: 100%;">
+                        <span style="color: #2e7d32; font-weight: bold; display: block; margin-bottom: 10px;">✅ Record Closed (Returned)</span>
+                        <a href="/download_invoice/{{ b.id }}" class="action-btn btn-invoice">📄 Download Invoice</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 100px; color: #999;">
+            <p>You haven't made any bookings yet.</p>
+            <a href="{{ url_for('customer_browse_equipment') }}" style="color: #2e7d32; font-weight: bold;">Browse Equipment Now</a>
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

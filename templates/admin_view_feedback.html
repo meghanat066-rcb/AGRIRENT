@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - View Feedback</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; background: #f4f7f6; }
+        .sidebar { width: 260px; height: 100vh; background: #2c3e50; color: white; position: fixed; }
+        .nav-link { display: block; padding: 15px 25px; color: #bdc3c7; text-decoration: none; }
+        .nav-link:hover { background: #34495e; color: white; }
+        .content { margin-left: 260px; padding: 30px; width: 100%; }
+        
+        .feedback-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .feedback-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-top: 4px solid #2e7d32; }
+        .stars { color: #ffc107; font-size: 1.2rem; margin: 10px 0; }
+        .meta-info { font-size: 13px; color: #7f8c8d; }
+        .vendor-tag { background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div style="padding: 20px; background: #1a252f; text-align: center; font-weight: bold; color: #3498db;">AGRI RENTAL ADMIN</div>
+        <a href="/admin_dashboard" class="nav-link">🏠 Dashboard</a>
+        <a href="/admin_manage_vendors" class="nav-link">🚜 Manage Vendors</a>
+        <a href="/admin_view/customers" class="nav-link">👥 Registered Customers</a>
+        <a href="/admin_view/equipment" class="nav-link">🛠️ View Equipment</a>
+        <a href="/admin_view_bookings" class="nav-link">📅 View Bookings</a>
+        <a href="/admin_view_feedback" class="nav-link" style="color: white; background: #34495e;">💬 View Feedback</a>
+        <a href="/admin_view_inquiries" class="nav-link">📧 View Inquiries</a>
+        <a href="/logout" class="nav-link" style="color: #e74c3c; margin-top: 20px;">🚪 Logout</a>
+    </div>
+
+    <div class="content">
+        <h1>Global Customer Feedback</h1>
+        <p>Reviewing all ratings and comments across the platform.</p>
+        <hr><br>
+
+        <div class="feedback-grid">
+            {% for f in feedbacks %}
+            <div class="feedback-card">
+                <div class="meta-info">Customer: <strong>{{ f.customer_name }}</strong></div>
+                <div class="meta-info">Item: {{ f.equipment_name }}</div>
+                <div class="stars">{% for i in range(f.rating|int) %}★{% endfor %}</div>
+                <p style="color: #34495e;">"{{ f.feedback_message }}"</p>
+                <div class="meta-info">Vendor: <span class="vendor-tag">{{ f.vendor_name }}</span></div>
+            </div>
+            {% else %}
+            <p style="color: #888;">No feedback submitted yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

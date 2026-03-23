@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Login | AgriRental</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            /* NEW: Background Image with Dark Overlay */
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .login-box { 
+            /* MODIFIED: Slight transparency for a modern look */
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 40px; 
+            border-radius: 15px; 
+            width: 350px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+        }
+        h2 { text-align: center; color: #2e7d32; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <script>
+        alert("{{ message }}");
+      </script>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+    <div class="login-box">
+        <h2>Customer Login</h2>
+        <form action="/customer_login" method="POST">
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p style="text-align: center;">New user? <a href="/customer_register">Register Here</a></p>
+    </div>
+</body>
+</html>

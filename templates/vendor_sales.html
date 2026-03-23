@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Report</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: #2e7d32; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        .stars { color: #ffc107; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h2>Total Revenue: ₹{{ total_revenue }}</h2>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th><th>Equipment</th><th>Customer</th><th>Amount</th><th>Rating</th><th>Feedback</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in sales %}
+            <tr>
+                <td>#{{ s.id }}</td>
+                <td>{{ s.equip_name }}</td>
+                <td>{{ s.cust_name }}</td>
+                <td>₹{{ s.total_price }}</td>
+                <td class="stars">
+                    {% if s.rating %}{% for i in range(s.rating|int) %}⭐{% endfor %}{% else %}No Rating{% endif %}
+                </td>
+                <td>{{ s.feedback_message or "No comment" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br><a href="{{ url_for('vendor_dashboard') }}">Back to Dashboard</a>
+</div>
+</body>
+</html>

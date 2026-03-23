@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Secure Payment Gateway</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .payment-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 400px; position: relative; overflow: hidden; }
+        .header { text-align: center; border-bottom: 1px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
+        
+        /* Updated Amount Box for Tax Breakdown */
+        .amount-box { background: #f1f8e9; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 25px; border: 1px solid #c8e6c9; }
+        .tax-row { display: flex; justify-content: space-between; font-size: 13px; color: #666; margin-bottom: 5px; }
+        .amount-box h2 { color: #2e7d32; margin: 5px 0; border-top: 1px dashed #c8e6c9; padding-top: 5px; }
+        
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; font-size: 13px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .flex-row { display: flex; gap: 15px; }
+        button { width: 100%; padding: 15px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #1b5e20; }
+        .error-hint { color: #d32f2f; font-size: 11px; display: none; margin-bottom: 10px; font-weight: bold; }
+
+        #loader {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; border-radius: 15px; flex-direction: column; justify-content: center; align-items: center; z-index: 10;
+        }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #2e7d32;
+            border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="payment-card">
+    {% if success %}
+    <div id="success-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; text-align: center; padding: 20px; box-sizing: border-box;">
+        <div style="font-size: 60px; margin-bottom: 20px;">✅</div>
+        <h2 style="color: #2e7d32; margin: 0;">Payment Successful!</h2>
+        <p style="color: #666; margin-top: 10px;">Your equipment is now reserved.</p>
+        <p style="font-size: 12px; color: #999; margin-top: 20px;">Redirecting you back to your records...</p>
+    </div>
+    {% endif %}
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; font-weight: bold; color: #2e7d32;">Verifying Transaction...</p>
+        <p style="font-size: 12px; color: #999;">Please do not refresh the page.</p>
+    </div>
+
+    <div class="header">
+        <h3 style="margin: 0;">AgriPay Secure Gateway</h3>
+        <p style="font-size: 12px; color: #666;">Booking ID: #BK00{{ booking.id }}</p>
+    </div>
+
+    <div class="amount-box">
+        <div class="tax-row">
+            <span>Base Rental:</span>
+            <span>₹{{ "%.2f"|format(amount / 1.18) }}</span>
+        </div>
+        <div class="tax-row">
+            <span>GST (18%):</span>
+            <span>₹{{ "%.2f"|format(amount - (amount / 1.18)) }}</span>
+        </div>
+        <h2>₹{{ amount }}</h2>
+        <span style="font-size: 10px; color: #2e7d32; font-weight: bold;">TOTAL TAX INCLUSIVE</span>
+    </div>
+
+    <form id="paymentForm" method="POST" action="{{ url_for('payment', booking_id=booking.id) }}">
+        <label>CARDHOLDER NAME</label>
+        <input type="text" id="cardName" placeholder="John Doe" required 
+               oninput="this.value = this.value.replace(/[0-9!@#$%^&*()]/g, '');">
+
+        <label>CARD NUMBER</label>
+        <input type="tel" id="cardNo" placeholder="XXXX XXXX XXXX XXXX" maxlength="16" required 
+               oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+        <div id="card-err" class="error-hint">❌ Must be exactly 16 digits</div>
+
+        <div class="flex-row">
+            <div style="flex: 1;">
+                <label>EXPIRY</label>
+                <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required 
+                       oninput="this.value = this.value.replace(/[^0-9/]/g, '');">
+            </div>
+            <div style="flex: 1;">
+                <label>CVV</label>
+                <input type="password" id="cvv" placeholder="***" maxlength="3" required 
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+            </div>
+        </div>
+
+        <button type="button" onclick="processPayment()">Confirm Payment</button>
+    </form>
+</div>
+
+<script>
+    function processPayment() {
+        const form = document.getElementById('paymentForm');
+        const cardNo = document.getElementById('cardNo').value;
+        const cvv = document.getElementById('cvv').value;
+        const expiry = document.getElementById('expiry').value;
+        const cardErr = document.getElementById('card-err');
+
+        let isValid = true;
+        
+        if (cardNo.length !== 16) {
+            cardErr.style.display = 'block';
+            isValid = false;
+        } else {
+            cardErr.style.display = 'none';
+        }
+
+        if (cvv.length !== 3 || !/^\d{2}\/\d{2}$/.test(expiry)) {
+            isValid = false;
+        }
+
+        if (form.checkValidity() && isValid) {
+            document.getElementById('loader').style.display = 'flex';
+            setTimeout(function() {
+                form.submit();
+            }, 3000);
+        } else {
+            form.reportValidity();
+        }
+    }
+
+    const paymentSuccess = "{{ success }}"; 
+    if (paymentSuccess === "True") {
+        setTimeout(function() {
+            window.location.href = "{{ url_for('my_bookings') }}";
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>

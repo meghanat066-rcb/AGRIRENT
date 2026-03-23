@@ -1,0 +1,187 @@
+:root {
+    --dark-green: #2e4d23;
+    --primary-orange: #f16e22;
+    --light-gray: #f9f9f9;
+}
+
+body { 
+    margin: 0; 
+    font-family: 'Arial', sans-serif; 
+    color: #333; 
+    line-height: 1.6; 
+    background-color: #ffffff;
+}
+
+/* Navbar */
+.navbar { 
+    background: var(--dark-green); 
+    color: white; 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 15px 8%; 
+    align-items: center; 
+}
+
+.nav-links { 
+    list-style: none; 
+    display: flex; 
+    gap: 20px; 
+    margin: 0;
+}
+
+.nav-links a { 
+    color: white; 
+    text-decoration: none; 
+    font-size: 14px; 
+}
+
+/* Hero Section */
+.hero { 
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                url('../images/hero.jpg') center/cover no-repeat; 
+    height: 500px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center; 
+    color: white;
+}
+
+.hero-overlay { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.btn-orange { 
+    background: var(--primary-orange); 
+    color: white; 
+    padding: 12px 30px; 
+    border-radius: 25px; 
+    text-decoration: none; 
+    font-weight: bold; 
+    margin-top: 20px; 
+    display: inline-block;
+}
+
+/* General Layout */
+.section-padding { 
+    padding: 60px 8%; 
+    text-align: center; 
+}
+
+.section-title { 
+    font-size: 2rem; 
+    color: var(--dark-green); 
+    margin-bottom: 40px; 
+}
+
+.grid-container { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 30px; 
+}
+
+.light-bg { 
+    background-color: var(--light-gray); 
+}
+
+/* Info Cards (Why Choose Us) */
+.info-card { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+}
+
+.icon-circle { 
+    font-size: 40px; 
+    margin-bottom: 15px; 
+    display: block;
+}
+
+/* Product Cards (Equipment) */
+.product-card { 
+    background: white; 
+    border-radius: 15px; 
+    overflow: hidden; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
+    transition: 0.3s;
+    text-align: left;
+}
+
+.product-top { 
+    background: #6a994e; 
+    height: 150px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 60px; 
+}
+
+.product-info { 
+    padding: 20px; 
+}
+
+.product-info h3 {
+    margin: 0;
+    color: var(--dark-green);
+}
+
+.price { 
+    display: block; 
+    color: var(--primary-orange); 
+    font-weight: bold; 
+    font-size: 1.2rem; 
+    margin: 10px 0; 
+}
+
+.btn-rent { 
+    background: var(--dark-green); 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    width: 100%; 
+    font-weight: bold;
+}
+
+/* How it Works */
+.steps-container { 
+    display: flex; 
+    justify-content: space-around; 
+    flex-wrap: wrap; 
+    gap: 20px; 
+    margin-top: 20px;
+}
+
+.step { 
+    flex: 1; 
+    min-width: 200px; 
+    text-align: center;
+}
+
+.step-num { 
+    background: var(--primary-orange); 
+    color: white; 
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin: 0 auto 15px; 
+    font-weight: bold; 
+    font-size: 1.2rem; 
+}
+
+/* Footer */
+footer { 
+    background: var(--dark-green); 
+    color: white; 
+    padding: 30px 20px; 
+    text-align: center; 
+    margin-top: 40px; 
+}

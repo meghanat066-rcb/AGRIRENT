@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Registration | AgriRental</title>
+    <style>
+        /* Changed height to min-height and added padding for better scrolling */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; }
+        .reg-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { color: #2e7d32; text-align: center; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #2e7d32; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: background 0.3s; }
+        button:hover { background-color: #1b5e20; }
+        .footer-links { text-align: center; margin-top: 15px; font-size: 14px; }
+        .footer-links a { color: #2e7d32; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>alert("{{ message }}");</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="reg-container">
+        <h2>Vendor Registration</h2>
+        <form action="/vendor_register" method="POST">
+            <label>Shop Name</label>
+            <input type="text" name="shop_name" placeholder="Enter Shop Name" required
+                   oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
+
+            <label>Government ID</label>
+            <input type="text" name="government_id" placeholder="Enter 12-digit aadhar" maxlength="12" required
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+
+            <label>Owner Name</label>
+            <input type="text" name="owner_name" placeholder="Enter Owner Name" required
+                   oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
+
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="email@example.com" required>
+
+            <label>City</label>
+            <input type="text" name="city" placeholder="Enter City" required
+                   oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
+
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Create Password" minlength="8" required>
+
+            <button type="submit">Register Now</button>
+        </form>
+
+        <div class="footer-links">
+            Already have an account? <a href="/vendor_login">Login here</a><br>
+            <a href="/">← Back to Home</a>
+        </div>
+    </div>
+
+</body>
+</html>

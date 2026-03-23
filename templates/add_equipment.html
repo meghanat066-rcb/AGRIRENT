@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Equipment</title>
+    <style>
+        body { font-family: sans-serif; padding: 50px; background: #f4f4f4; }
+        .form-container { background: white; padding: 30px; border-radius: 10px; max-width: 400px; margin: auto; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; }
+        button { background: #28a745; color: white; border: none; padding: 10px; width: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>List New Equipment</h2>
+        <form action="{{ url_for('add_equipment') }}" method="POST" enctype="multipart/form-data">
+            <label style="font-weight: bold; display: block; margin-top: 10px;">Equipment Name:</label>
+            <input type="text" name="name" required placeholder="e.g. John Deere Tractor" 
+                    style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+
+            <label style="font-weight: bold; display: block; margin-top: 10px;">Category:</label>
+            <input type="text" name="category" required placeholder="e.g. Tractor, Plow, Harvester" 
+                    style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+
+            <label style="font-weight: bold; display: block; margin-top: 10px;">Description:</label>
+            <textarea name="description" rows="3" required placeholder="Describe condition, model year, features..." 
+                    style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+
+            <label style="font-weight: bold; display: block; margin-top: 10px;">Price Per Day (₹):</label>
+            <input type="number" name="price_per_day" required placeholder="e.g. 500" 
+                    style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+
+            <label style="font-weight: bold; display: block; margin-top: 10px;">Price Per Hour (₹):</label>
+            <input type="number" name="price_per_hour" required placeholder="e.g. 500" 
+                    style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">        
+
+            <label style="font-weight: bold; display: block; margin-top: 10px;">Availability Status:</label>
+            <select name="status" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background: white;">
+                 <option value="Available">Available</option>
+                 <option value="Unavailable">Unavailable (Maintenance/Booked)</option>
+             </select>
+
+            <label style="font-weight: bold; display: block; margin-top: 10px;">Upload Image:</label>
+            <input type="file" name="image" accept="image/*" style="margin-top: 5px;">
+
+            <button type="submit" style="width: 100%; background: #28a745; color: white; padding: 12px; margin-top: 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                Add Equipment
+            </button>
+        </form>
+    </div>
+</body>
+</html>

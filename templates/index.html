@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriRent | Agriculture Equipment Rental</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .product-card, .info-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover, .info-card:hover {
+            transform: translateY(-10px); /* Lifts the card up */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* Adds a decent shadow depth */
+        }
+
+        .btn-rent, .btn-orange {
+            transition: background 0.3s ease;
+        }
+
+        .btn-rent:hover {
+            filter: brightness(90%);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">🚜 AgriRent</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/customer_login">Customer Login</a></li>
+                <li><a href="/vendor_login">Vendor Login</a></li>
+                <li><a href="/admin_login">Admin Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-overlay">
+            <h1>Agriculture Equipment Rental System</h1>
+            <p>Rent high-quality agricultural equipment at your fingertips</p>
+            <a href="#equipment" class="btn-orange">Browse Equipment</a>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <h2 class="section-title">Why Choose AgriRent?</h2>
+        <div class="grid-container">
+            <div class="info-card">
+                <div class="icon-circle">💰</div>
+                <h3>Cost-Effective</h3>
+                <p>Save money by renting instead of buying expensive equipment</p>
+            </div>
+            <div class="info-card">
+                <div class="icon-circle">⚡</div>
+                <h3>Quick Delivery</h3>
+                <p>Get equipment delivered to your farm within 24 hours</p>
+            </div>
+            <div class="info-card">
+                <div class="icon-circle">🔧</div>
+                <h3>Well-Maintained</h3>
+                <p>All equipment is regularly serviced and in excellent condition</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="equipment" class="section-padding light-bg">
+        <h2 class="section-title">Various Equipment Types</h2>
+        <div class="grid-container">
+            <div class="product-card">
+                <div class="product-top green-bg">🚜</div>
+                <div class="product-info">
+                    <h3>Tractor</h3>
+                    <p>50-75 HP, perfect for plowing and cultivation</p>
+                    <span class="price">₹1,500/day</span>
+                    <button class="btn-rent">Rent Now</button>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-top green-bg">🌾</div>
+                <div class="product-info">
+                    <h3>Harvester</h3>
+                    <p>Combine harvester for wheat, rice, and corn</p>
+                    <span class="price">₹3,000/day</span>
+                    <button class="btn-rent">Rent Now</button>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-top green-bg">💧</div>
+                <div class="product-info">
+                    <h3>Irrigation Pump</h3>
+                    <p>High-efficiency water pump for irrigation</p>
+                    <span class="price">₹500/day</span>
+                    <button class="btn-rent">Rent Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-num">1</div>
+                <h3>Browse & Select</h3>
+                <p>Choose the equipment you need from our catalog</p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <h3>Book Online</h3>
+                <p>Select your rental period and confirm booking</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <h3>Get Delivered</h3>
+                <p>We deliver the equipment to your location</p>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <h3>Return</h3>
+                <p>Use the equipment and return when done</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>AgriRent - Agriculture Equipment Rental System</p>
+    </footer>
+</body>
+</html>

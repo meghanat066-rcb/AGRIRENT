@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriRental_Invoice_{{ invoice.id }}</title>
+    <style>
+        .invoice-box { max-width: 800px; margin: 50px auto; padding: 40px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, .15); font-family: 'Helvetica', sans-serif; color: #333; }
+        .invoice-box table { width: 100%; line-height: 24px; text-align: left; border-collapse: collapse; }
+        .header { font-size: 32px; color: #2e7d32; font-weight: bold; border-bottom: 3px solid #2e7d32; padding-bottom: 10px; }
+        .section-header { background: #f9f9f9; font-weight: bold; border-bottom: 1px solid #ddd; padding: 10px; }
+        .details td { padding: 12px; border-bottom: 1px solid #eee; }
+        .total-row { font-size: 20px; font-weight: bold; color: #2e7d32; background: #f1f8e9; }
+        .print-btn { background: #2e7d32; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 30px; font-weight: bold; }
+        @media print { .print-btn { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <table>
+            <tr><td class="header" colspan="2">AgriRental OFFICIAL RECEIPT</td></tr>
+            <tr class="details">
+                <td><strong>Invoice ID:</strong> #{{ invoice.id }}</td>
+                <td style="text-align: right;"><strong>Date:</strong> {{ invoice.booking_date }}</td>
+            </tr>
+            <tr><td colspan="2" style="height: 20px;"></td></tr>
+            <tr class="section-header"><td colspan="2">PARTY DETAILS</td></tr>
+            <tr class="details">
+                <td><strong>Vendor:</strong> {{ invoice.shop_name }}</td>
+                <td><strong>Customer:</strong> {{ invoice.cust_name }}</td>
+            </tr>
+            <tr class="section-header"><td colspan="2">EQUIPMENT & DURATION</td></tr>
+            <tr class="details">
+                <td><strong>Equipment:</strong> {{ invoice.equip_name }}</td>
+                <td><strong>Period:</strong> {{ invoice.start_date }} to {{ invoice.end_date }}</td>
+            </tr>
+            <tr class="total-row">
+                <td>TOTAL AMOUNT PAID</td>
+                <td style="text-align: right;">₹{{ invoice.total_price }}</td>
+            </tr>
+        </table>
+        <button class="print-btn" onclick="window.print()">🖨️ Download PDF / Print</button>
+    </div>
+</body>
+</html>

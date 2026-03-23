@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - View Bookings</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; background: #f4f7f6; }
+        .sidebar { width: 260px; height: 100vh; background: #2c3e50; color: white; position: fixed; }
+        .nav-link { display: block; padding: 15px 25px; color: #bdc3c7; text-decoration: none; }
+        .nav-link:hover { background: #34495e; color: white; }
+        .content { margin-left: 260px; padding: 30px; width: 100%; }
+        
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #2e7d32; color: white; text-transform: uppercase; font-size: 14px; }
+        tr:hover { background-color: #f9f9f9; }
+        
+        /* Dynamic Status Pills */
+        .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-pending { background: #fff3e0; color: #ef6c00; }
+        .status-completed { background: #e8f5e9; color: #2e7d32; }
+        .status-cancelled { background: #ffebee; color: #c62828; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div style="padding: 20px; background: #1a252f; text-align: center; font-weight: bold; color: #3498db;">
+            AGRI RENTAL ADMIN
+        </div>
+        <a href="/admin_dashboard" class="nav-link">🏠 Dashboard</a>
+        <a href="/admin_manage_vendors" class="nav-link">🚜 Manage Vendors</a>
+        <a href="/admin_view/customers" class="nav-link">👥 Registered Customers</a>
+        <a href="/admin_view/equipment" class="nav-link">🛠️ View Equipment</a>
+        <a href="/admin_view_bookings" class="nav-link" style="color: white; background: #34495e;">📅 View Bookings</a>
+        <a href="/admin_view_feedback" class="nav-link">💬 View Feedback</a>
+        <a href="/admin_view_inquiries" class="nav-link">📧 View Inquiries</a>
+        <a href="/logout" class="nav-link" style="color: #e74c3c; margin-top: 20px;">🚪 Logout</a>
+    </div>
+
+    <div class="content">
+        <h1>All Equipment Bookings</h1>
+        <p style="color: #666;">Monitoring all rental transactions across the platform.</p>
+        <hr><br>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Customer</th>
+                    <th>Equipment</th>
+                    <th>Vendor</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in bookings %}
+                <tr>
+                    <td>#BK-100{{ b.id }}</td>
+                    <td>{{ b.customer_name }}</td>
+                    <td><strong>{{ b.equipment_name }}</strong></td>
+                    <td>{{ b.vendor_name }}</td>
+                    <td>₹{{ b.total_price }}</td>
+                    <td>{{ b.booking_date }}</td>
+                    <td>
+                        <span class="status-pill 
+                            {% if b.status == 'Pending' %}status-pending
+                            {% elif b.status == 'Completed' %}status-completed
+                            {% else %}status-cancelled{% endif %}">
+                            {{ b.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #888;">No bookings found in the system.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

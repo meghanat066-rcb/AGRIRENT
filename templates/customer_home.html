@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Equipment | AgriRent</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; }
+        .navbar { background: #28a745; color: white; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; font-weight: 500; }
+        
+        .search-container { text-align: center; padding: 40px 20px; background: #fff; border-bottom: 1px solid #ddd; }
+        .search-container input[type="text"] { width: 50%; padding: 12px; border: 1px solid #ccc; border-radius: 25px; outline: none; }
+        
+        .equipment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; padding: 40px 50px; max-width: 1200px; margin: 0 auto; }
+        .item-card { border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; }
+        .item-card:hover { transform: translateY(-5px); }
+        .item-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 5px; margin-bottom: 10px; }
+        .item-card h3 { margin: 0 0 10px 0; color: #333; }
+        .item-card p { margin: 5px 0; color: #666; font-size: 0.9em; }
+        .price { color: #28a745; font-weight: bold; font-size: 1.1em; margin: 10px 0; }
+        .btn-book { display: block; background: #28a745; color: white; text-align: center; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div style="font-size: 24px; font-weight: bold;">AgriRent</div>
+        <div>
+            <a href="{{ url_for('customer_dashboard') }}">🏠 Dashboard</a>
+            <a href="{{ url_for('customer_browse_equipment') }}">🚜 Browse</a>
+            <a href="{{ url_for('my_bookings') }}">📅 My Bookings</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="search-container">
+        <form action="{{ url_for('customer_browse_equipment') }}" method="GET">
+            <input type="text" name="search" placeholder="Search for tractors, harvesters, or city..." value="{{ request.args.get('search', '') }}">
+            <button type="submit" style="padding: 12px 25px; background: #28a745; color: white; border: none; border-radius: 25px; cursor: pointer; margin-left: 10px;">Search</button>
+        </form>
+    </div>
+
+    <div class="equipment-grid">
+     {% if equipment %}
+        {% for item in equipment %}
+        <div class="item-card">
+            <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="{{ item.name }}">
+            <h3>{{ item.name }}</h3>
+            <p><strong>Category:</strong> {{ item.type }}</p>
+            <p><strong>Location:</strong> {{ item.city }}</p>
+            <p class="price">₹{{ item.price }} / Day</p>
+            <a href="{{ url_for('book_equipment', id=item.id) }}" class="btn-book">Book Now</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; grid-column: 1 / -1; padding: 50px;">
+            <h3 style="color: #666;">No equipment found. Try a different search!</h3>
+        </div>
+    {% endif %}
+    </div>
+</body>
+</html>

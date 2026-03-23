@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Registration</title>
+    <style>
+        body { background-color: #e3f2fd; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+        .reg-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 400px; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 14px; margin-bottom: 5px; color: #555; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .btn-reg { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .login-link { text-align: center; margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="reg-card">
+        <h2>👤 Customer Registration</h2>
+        <form action="/customer_register" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="text" name="name" placeholder="👤 Name" required 
+                       oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
+            </div>
+            
+            <div class="form-group">
+                <input type="email" name="email" placeholder="📧 Email" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" name="password" placeholder="🔒 Password" minlength="8" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="tel" name="phone" placeholder="📞 Phone (10 digits)" maxlength="10" required 
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+            </div>
+            
+            <div class="form-group">
+                <input type="text" name="city" placeholder="📍 City" required 
+                       oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');">
+            </div>
+            
+            <div class="form-group">
+                <textarea name="address" placeholder="📍 Address" rows="2" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>📁 Upload ID Proof</label>
+                <input type="file" name="id_proof" required>
+            </div>
+            
+            <button type="submit" class="btn-reg">✅ Register</button>
+        </form>
+        <div class="login-link">Already have an account? <a href="/customer_login">Login</a></div>
+    </div>
+</body>
+</html>
